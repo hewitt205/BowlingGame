@@ -1,0 +1,77 @@
+﻿@page "/bowling"
+@using Model 
+
+<h3>Bowling</h3>
+
+<table class="table table-light">
+    <thead>
+        <tr>Frame</tr>
+        <tr>Roll 1</tr>
+        <tr>Roll 2</tr>
+        <tr>Roll 3</tr>
+    </thead>
+    <tbody>
+        @foreach (Frame frame in frames)
+        {
+            @if (frame.Id != 10)
+            {
+                <tr>
+                    <td>
+                        <input type="text" @bind-value="frame.Id" />
+                    </td>
+                    <td>
+                        <input type="button" @bind-value="frame.Roll1" onclick="GetRoll" />Roll 1<br />
+                    </td>
+                    <td>
+                        <input type="button" @bind-value="frame.Roll2" onclick="GetNextRoll(frame.Roll1)" />Roll2<br />
+                    </td>
+                </tr>
+            }
+            else 
+            { 
+                <tr>
+                    <td>
+                        <input type="text" @bind-value="frame.Id" />
+                    </td>
+                    <td>
+                        <input type="button" @bind-value="frame.Roll1" onclick="GetRoll" />Roll 1<br />
+                    </td>
+                    <td>
+                        <input type="button" @bind-value="frame.Roll2" onclick="GetNextRoll(frame.Roll1)" />Roll2<br />
+                    </td>
+                    <td>
+                        <input type="button" @bind-value="frame.Roll3" onclick="GetFinalRoll" />Roll 3<br />
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+    
+</table>
+
+@code{
+    Random random = new Random();
+    List<Frame> frames = new List<Frame>(10);
+
+    private int GetRoll()
+    {
+        return random.Next(0, 10);
+    }
+    private int GetNextRoll(Frame frame)
+    {
+        if (10 - frame.Roll1 != 0)
+        {
+            int remainingPins = 10 - frame.Roll1;
+            return random.Next(0, remainingPins);
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    private int GetFinalRoll()
+    {
+        return random.Next(0, 10);
+    }
+
+}
