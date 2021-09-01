@@ -1,7 +1,280 @@
 ﻿@page "/"
+@using Model
 
-<h1>Hello, world!</h1>
+<h1>Bowling</h1>
 
-Welcome to your new app.
+<div class="col-md-8">
+    <table class="table table-bordered table-light">
+        <thead>
+            <td>Frame</td>
+            <td>Roll 1</td>
+            <td>Roll 2</td>
+            <td>Roll 3</td>
+        </thead>
+        <tbody>
+            @foreach (Frame frame in frames)
+            {
+                @if (frame.Id != 10)
+                {
+                    <tr>
+                        <td>
+                            @frame.Id
+                        </td>
+                        <td>
+                            <button disabled="@frame.IsTask1" @onclick="() => GetFirstRoll(frame)">@(frame.Roll1 >= 0?frame.Roll1:"Roll")</button>
+                        </td>
+                        <td>
+                            <button disabled="@frame.IsTask2" @onclick="(() => GetSecondRoll(frame))">@(frame.Roll2 >= 0?frame.Roll2:"Roll")</button>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>
+                            @frame.Id
+                        </td>
+                        <td>
+                            <button disabled="@frame.IsTask1" @onclick="() => GetFirstRoll(frame)">@(frame.Roll1 >= 0?frame.Roll1:"Roll")</button>
+                        </td>
+                        <td>
+                            <button disabled="@frame.IsTask2" @onclick="(() => GetSecondRoll(frame))">@(frame.Roll2 >= 0?frame.Roll2:"Roll")</button>
+                        </td>
+                        <td>
+                            <button disabled="@frame.IsTask3" @onclick="(() => GetFinalRoll(frame))">@(frame.Roll3 >= 0?frame.Roll3:"Roll")</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    <button @onclick="() => TallyScore(frames)">Tally Score</button>
+    <span>@TotalScore</span>
+    <br />
+    <br />
+    <button @onclick="() => ResetGame()">Reset Game</button>
+</div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code{
+    Random random = new Random();
+    List<Frame> frames = new List<Frame>();
+    int TotalScore = 0;
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        for (int i = 1; i <= 10; i++)
+        {
+
+            frames.Add(new Frame
+            {
+                Id = i,
+                Strike = false,
+                Spare = false,
+                IsTask1 = false,
+                IsTask2 = true,
+                IsTask3 = true
+            });
+
+        }
+    }
+
+    protected void ResetGame()
+    {
+        frames.Clear();
+        TotalScore = 0;
+        OnInitialized();
+    }
+
+    protected int GetFirstRoll(Frame frame)
+    {
+        frame.IsTask1 = true;
+        frame.Roll1 = random.Next(0, 11);
+        if (frame.Roll1 != 10)
+        {
+            frame.IsTask2 = false;
+        }
+        else
+        {
+            frame.Strike = true;
+        }
+        frame.FrameScore += frame.Roll1;
+        return frame.Roll1;
+    }
+
+    protected int GetSecondRoll(Frame frame)
+    {
+        frame.IsTask2 = true;
+        frame.Roll2 = random.Next(0, (10 - frame.Roll1));
+        if (frame.Roll1 + frame.Roll2 == 10)
+        {
+            frame.Spare = true;
+            frame.IsTask3 = false;
+        }
+        else if (frame.Roll2 == 10)
+        {
+            frame.IsTask3 = false;
+            frame.Strike = true;
+        }
+        frame.FrameScore += frame.Roll2;
+        return frame.Roll2;
+    }
+
+    protected int GetFinalRoll(Frame frame)
+    {
+        frame.IsTask3 = true;
+        frame.Roll3 = random.Next(0, 11);
+        frame.FrameScore += frame.Roll3;
+        return frame.Roll3;
+    }
+
+    protected int TallyScore(List<Frame> frames)
+    {
+        int Frame1 = 0;
+        int Frame2 = 0;
+        int Frame3 = 0;
+        int Frame4 = 0;
+        int Frame5 = 0;
+        int Frame6 = 0;
+        int Frame7 = 0;
+        int Frame8 = 0;
+        int Frame9 = 0;
+        int Frame10 = 0;
+
+        if (frames.FirstOrDefault(x => x.Id == 1).Strike)
+        {
+            Frame1 = frames.FirstOrDefault(x => x.Id == 1).FrameScore + frames.FirstOrDefault(x => x.Id == 2).Roll1 + frames.FirstOrDefault(x => x.Id == 2).Roll2;
+        }
+        else if (frames.FirstOrDefault(x => x.Id == 1).Spare)
+        {
+            Frame1 = frames.FirstOrDefault(x => x.Id == 1).FrameScore + frames.FirstOrDefault(x => x.Id == 2).Roll1;
+        }
+        else
+        {
+            Frame1 = frames.FirstOrDefault(x => x.Id == 1).FrameScore;
+        }
+
+        if (frames.FirstOrDefault(x => x.Id == 2).Strike)
+        {
+            Frame2 = frames.FirstOrDefault(x => x.Id == 2).FrameScore + frames.FirstOrDefault(x => x.Id == 3).Roll1 + frames.FirstOrDefault(x => x.Id == 3).Roll2;
+        }
+        else if (frames.FirstOrDefault(x => x.Id == 2).Spare)
+        {
+            Frame2 = frames.FirstOrDefault(x => x.Id == 2).FrameScore + frames.FirstOrDefault(x => x.Id == 3).Roll1;
+        }
+        else
+        {
+            Frame2 = frames.FirstOrDefault(x => x.Id == 2).FrameScore;
+        }
+
+        if (frames.FirstOrDefault(x => x.Id == 3).Strike)
+        {
+            Frame3 = frames.FirstOrDefault(x => x.Id == 3).FrameScore + frames.FirstOrDefault(x => x.Id == 4).Roll1 + frames.FirstOrDefault(x => x.Id == 4).Roll2;
+        }
+        else if (frames.FirstOrDefault(x => x.Id == 3).Spare)
+        {
+            Frame3 = frames.FirstOrDefault(x => x.Id == 3).FrameScore + frames.FirstOrDefault(x => x.Id == 4).Roll1;
+        }
+        else
+        {
+            Frame3 = frames.FirstOrDefault(x => x.Id == 3).FrameScore;
+        }
+
+        if (frames.FirstOrDefault(x => x.Id == 4).Strike)
+        {
+            Frame4 = frames.FirstOrDefault(x => x.Id == 5).FrameScore + frames.FirstOrDefault(x => x.Id == 5).Roll1 + frames.FirstOrDefault(x => x.Id == 5).Roll2;
+        }
+        else if (frames.FirstOrDefault(x => x.Id == 4).Spare)
+        {
+            Frame4 = frames.FirstOrDefault(x => x.Id == 5).FrameScore + frames.FirstOrDefault(x => x.Id == 5).Roll1;
+        }
+        else
+        {
+            Frame4 = frames.FirstOrDefault(x => x.Id == 4).FrameScore;
+        }
+
+        if (frames.FirstOrDefault(x => x.Id == 5).Strike)
+        {
+            Frame5 = frames.FirstOrDefault(x => x.Id == 5).FrameScore + frames.FirstOrDefault(x => x.Id == 6).Roll1 + frames.FirstOrDefault(x => x.Id == 6).Roll2;
+        }
+        else if (frames.FirstOrDefault(x => x.Id == 5).Spare)
+        {
+            Frame5 = frames.FirstOrDefault(x => x.Id == 5).FrameScore + frames.FirstOrDefault(x => x.Id == 6).Roll1;
+        }
+        else
+        {
+            Frame5 = frames.FirstOrDefault(x => x.Id == 5).FrameScore;
+        }
+
+        if (frames.FirstOrDefault(x => x.Id == 6).Strike)
+        {
+            Frame6 = frames.FirstOrDefault(x => x.Id == 6).FrameScore + frames.FirstOrDefault(x => x.Id == 7).Roll1 + frames.FirstOrDefault(x => x.Id == 7).Roll2;
+        }
+        else if (frames.FirstOrDefault(x => x.Id == 6).Spare)
+        {
+            Frame6 = frames.FirstOrDefault(x => x.Id == 6).FrameScore + frames.FirstOrDefault(x => x.Id == 7).Roll1;
+        }
+        else
+        {
+            Frame6 = frames.FirstOrDefault(x => x.Id == 6).FrameScore;
+        }
+
+        if (frames.FirstOrDefault(x => x.Id == 7).Strike)
+        {
+            Frame7 = frames.FirstOrDefault(x => x.Id == 7).FrameScore + frames.FirstOrDefault(x => x.Id == 8).Roll1 + frames.FirstOrDefault(x => x.Id == 8).Roll2;
+        }
+        else if (frames.FirstOrDefault(x => x.Id == 7).Spare)
+        {
+            Frame7 = frames.FirstOrDefault(x => x.Id == 7).FrameScore + frames.FirstOrDefault(x => x.Id == 8).Roll1;
+        }
+        else
+        {
+            Frame7 = frames.FirstOrDefault(x => x.Id == 7).FrameScore;
+        }
+
+        if (frames.FirstOrDefault(x => x.Id == 8).Strike)
+        {
+            Frame8 = frames.FirstOrDefault(x => x.Id == 8).FrameScore + frames.FirstOrDefault(x => x.Id == 9).Roll1 + frames.FirstOrDefault(x => x.Id == 9).Roll2;
+        }
+        else if (frames.FirstOrDefault(x => x.Id == 8).Spare)
+        {
+            Frame8 = frames.FirstOrDefault(x => x.Id == 8).FrameScore + frames.FirstOrDefault(x => x.Id == 9).Roll1;
+        }
+        else
+        {
+            Frame8 = frames.FirstOrDefault(x => x.Id == 8).FrameScore;
+        }
+
+        if (frames.FirstOrDefault(x => x.Id == 9).Strike)
+        {
+            Frame9 = frames.FirstOrDefault(x => x.Id == 9).FrameScore + frames.FirstOrDefault(x => x.Id == 10).Roll1 + frames.FirstOrDefault(x => x.Id == 10).Roll2;
+        }
+        else if (frames.FirstOrDefault(x => x.Id == 9).Spare)
+        {
+            Frame9 = frames.FirstOrDefault(x => x.Id == 9).FrameScore + frames.FirstOrDefault(x => x.Id == 10).Roll1;
+        }
+        else
+        {
+            Frame9 = frames.FirstOrDefault(x => x.Id == 9).FrameScore;
+        }
+
+        if (frames.FirstOrDefault(x => x.Id == 10).Strike)
+        {
+            Frame10 = frames.FirstOrDefault(x => x.Id == 10).FrameScore + frames.FirstOrDefault(x => x.Id == 10).Roll1 + frames.FirstOrDefault(x => x.Id == 10).Roll2 + frames.FirstOrDefault(x => x.Id == 10).Roll3;
+        }
+        else if (frames.FirstOrDefault(x => x.Id == 10).Spare)
+        {
+            Frame10 = frames.FirstOrDefault(x => x.Id == 10).FrameScore + frames.FirstOrDefault(x => x.Id == 10).Roll3;
+        }
+        else
+        {
+            Frame10 = frames.FirstOrDefault(x => x.Id == 10).FrameScore;
+        }
+
+        return TotalScore = Frame1 + Frame2 + Frame3 + Frame4 + Frame5 + Frame6 + Frame7 + Frame8 + Frame9 + Frame10;
+    }
+}
